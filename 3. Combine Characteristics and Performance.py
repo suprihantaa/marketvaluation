@@ -1,0 +1,659 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 28 19:55:55 2020
+
+@author: Cynthia Suprihanta
+"""
+
+
+##################################### England ###############################################
+
+import pandas as pd
+import numpy as np
+
+english_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/england.xlsx')
+english_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/england_player.csv')
+
+#remove accent
+
+x = english_id.select_dtypes(include=[np.object]).columns
+english_id[x] = english_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+y = english_performance.select_dtypes(include=[np.object]).columns
+english_performance[y] = english_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+#lower case
+
+english_id['Player Name']=english_id['Player Name'].str.lower()
+english_performance['player_name']=english_performance['player_name'].str.lower()
+
+
+#search id_dataset's names among performance_dataset's names
+
+#match the team name between dataset
+
+id_team_name_list = english_id['Club Name'].unique()
+performance_team_name_list = english_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Wolves' : 'wolverhampton-wanderers'}
+
+def match_team_name(df1_list, df2_list, unique_dict):
+  result = unique_dict
+  
+  for df2_team_name in df2_list:
+    df2_team_name_lower = df2_team_name.lower()
+    df2_team_name_lower_words = df2_team_name_lower.split(" ")
+        
+    for df1_team_name in df1_list:
+      df1_team_name_lower = df1_team_name.lower()
+      df1_team_name_lower_words = df1_team_name_lower.split("-")
+      
+      is_match = all(elem in df1_team_name_lower_words for elem in df2_team_name_lower_words)
+      
+      if is_match:
+        result[df2_team_name] = df1_team_name
+        break
+      else:
+        continue
+  
+  return result
+
+
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+english_performance['match_team_name'] = english_performance['team_name'].map(team_name_matched_dict)
+
+
+
+#match the player name
+
+def match_score_player_name(df1_player_name, df2_player_name):  
+  df1_name_list = df1_player_name.split(" ")
+  df2_name_list = df2_player_name.split(" ")
+  
+  return len(set(df1_name_list) & set(df2_name_list))
+
+
+def match_player_name(df1, df2):
+    # retrieve the team from performance dataset
+  prev_team_name = df2.iloc[0]['match_team_name']
+  
+    #retrieve the data that has the same team with the team asked in prev_team_name  
+  team_players = df1.loc[df1['Club Name'] == prev_team_name]
+
+    #create a new column in performance dataset that can keep
+      #the match player name with id dataset
+  df2['matched_player_name'] = ""
+  
+  # itterate over the performance_dataset rows
+  for index, row in df2.iterrows():
+    score = 0
+    matched_player_name = ""
+    df2_player_name = row['player_name']
+    team_name = row["match_team_name"]
+    
+    if prev_team_name != team_name:
+        # retrieve the match team name 
+      team_name = row["match_team_name"]
+      
+      # retrieve the players from same team
+      team_players = df1.loc[df1['Club Name'] == team_name]
+      
+      prev_team_name = team_name
+      
+    # iterate over the player from the same team in id dataset 
+    for df1_player_index, df1_player_row in team_players.iterrows():
+        
+        # retrieve the player name from id dataset
+      df1_player_name = df1_player_row['Player Name']
+      
+        # split the name in id dataset and performance dataset  
+      # count how many words that match between the player name in both dataset
+      match_name_score = match_score_player_name(df1_player_name, df2_player_name)
+      
+      # check if there is more than one word in player name that match
+      if match_name_score > score:
+          # change the score as how many words that match
+        score = match_name_score
+        
+        # put the player name in id dataset in matched_player_name column 
+        # in performance dataset
+        matched_player_name = df1_player_name
+      
+        
+    df2['matched_player_name'][index] = matched_player_name
+  
+  return df2
+
+english_performance = match_player_name(english_id, english_performance)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+english_performance = english_performance.replace(r'',np.NaN)
+
+# drop the row
+english_performance = english_performance[english_performance['matched_player_name'].notna()]
+
+
+################################# Spain #################################
+ 
+spain_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/spain.xlsx')
+spain_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/spain_player.csv')
+
+#remove accent
+
+x = spain_id.select_dtypes(include=[np.object]).columns
+spain_id[x] = spain_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = spain_performance.select_dtypes(include=[np.object]).columns
+spain_performance[y] = spain_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+spain_id['Player Name']=spain_id['Player Name'].str.lower()
+spain_performance['player_name']=spain_performance['player_name'].str.lower()
+
+#match the team name between dataset
+
+id_team_name_list = spain_id['Club Name'].unique()
+performance_team_name_list = spain_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Athletic Club' : 'athletic-bilbao'}
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+spain_performance['match_team_name'] = spain_performance['team_name'].map(team_name_matched_dict)
+spain_performance['match_team_name'].unique()
+
+# match player name
+spain_performance = match_player_name(spain_id, spain_performance)
+spain_performance.head(30)
+spain_id.columns
+
+#  remove unnecessary column = 'Unnamed: 9', 'Unnamed: 10'
+
+spain_id = spain_id.drop('Unnamed: 9', 1)
+spain_id = spain_id.drop('Unnamed: 10', 1)
+
+spain_id
+spain_performance
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+spain_performance = spain_performance.replace(r'',np.NaN)
+
+# drop the row
+spain_performance = spain_performance[spain_performance['matched_player_name'].notna()]
+
+
+############################ Italy ###################################
+
+italy_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/italy.xlsx')
+italy_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/italy_player.csv')
+
+#remove accent
+
+x = italy_id.select_dtypes(include=[np.object]).columns
+italy_id[x] = italy_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = italy_performance.select_dtypes(include=[np.object]).columns
+italy_performance[y] = italy_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+italy_id['Player Name']=italy_id['Player Name'].str.lower()
+italy_performance['player_name']=italy_performance['player_name'].str.lower()
+
+
+#match the team name between dataset
+
+id_team_name_list = italy_id['Club Name'].unique()
+performance_team_name_list = italy_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Napoli':'ssc-neapel',
+                    'Fiorentina':'ac-florenz',
+                    'Torino':'fc-turin',
+                    'Genoa':'fc-genua-1893',
+                    'AC Milan':'ac-mailand',
+                    'AS Roma':'as-rom',
+                    }
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+italy_performance['match_team_name'] = italy_performance['team_name'].map(team_name_matched_dict)
+
+
+
+# match player name
+italy_performance = match_player_name(italy_id, italy_performance)
+italy_performance.head(20)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+italy_performance
+# replace the empty string with NaN
+italy_performance = italy_performance.replace(r'',np.NaN)
+
+# drop the row
+italy_performance = italy_performance[italy_performance['matched_player_name'].notna()]
+
+#################################### Germany #################################
+
+germany_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/germany.xlsx')
+germany_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/germany_player.csv')
+
+#remove accent
+
+x = germany_id.select_dtypes(include=[np.object]).columns
+germany_id[x] = germany_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = germany_performance.select_dtypes(include=[np.object]).columns
+germany_performance[y] = germany_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+germany_id['Player Name']=germany_id['Player Name'].str.lower()
+germany_performance['player_name']=germany_performance['player_name'].str.lower()
+
+
+#match the team name between dataset
+
+id_team_name_list = germany_id['Club Name'].unique()
+performance_team_name_list = germany_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'RB Leipzig':'rasenballsport-leipzig',
+                    'Hertha Berlin':'hertha-bsc',
+                    'Bayern Munich':'fc-bayern-munchen'
+                    }
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+germany_performance['match_team_name'] = germany_performance['team_name'].map(team_name_matched_dict)
+
+
+# match player name
+germany_performance = match_player_name(germany_id, germany_performance)
+germany_performance.head(20)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+germany_performance = germany_performance.replace(r'',np.NaN)
+germany_performance
+# drop the row
+germany_performance = germany_performance[germany_performance['matched_player_name'].notna()]
+
+#################################### France #################################
+
+france_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/france.xlsx')
+france_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/france_player.csv')
+
+#remove accent
+
+x = france_id.select_dtypes(include=[np.object]).columns
+france_id[x] = france_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = france_performance.select_dtypes(include=[np.object]).columns
+france_performance[y] = france_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+#lower case
+
+france_id['Player Name']=france_id['Player Name'].str.lower()
+france_performance['player_name']=france_performance['player_name'].str.lower()
+
+#match the team name between dataset
+
+
+id_team_name_list = france_id['Club Name'].unique()
+performance_team_name_list = france_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Strasbourg':'racing-strassburg',
+                    'Nice':'ogc-nizza'}
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+france_performance['match_team_name'] = france_performance['team_name'].map(team_name_matched_dict)
+
+# match player name
+france_performance = match_player_name(france_id, france_performance)
+
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+france_performance = france_performance.replace(r'',np.NaN)
+
+# drop the row
+france_performance = france_performance[france_performance['matched_player_name'].notna()]
+
+######################################## Netherland #############################################
+
+netherlands_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/netherlands.xlsx')
+netherlands_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/netherlands_player.csv')
+
+
+#remove accent
+
+x = netherlands_id.select_dtypes(include=[np.object]).columns
+netherlands_id[x] = netherlands_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = netherlands_performance.select_dtypes(include=[np.object]).columns
+netherlands_performance[y] = netherlands_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+netherlands_id['Player Name']=netherlands_id['Player Name'].str.lower()
+netherlands_performance['player_name']=netherlands_performance['player_name'].str.lower()
+
+
+
+#match the team name between dataset
+
+
+id_team_name_list = netherlands_id['Club Name'].unique()
+performance_team_name_list = netherlands_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {}
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+netherlands_performance['match_team_name'] = netherlands_performance['team_name'].map(team_name_matched_dict)
+
+
+# match player name
+netherlands_performance = match_player_name(netherlands_id, netherlands_performance)
+netherlands_performance.head(10)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+netherlands_performance = netherlands_performance.replace(r'',np.NaN)
+
+# drop the row
+netherlands_performance = netherlands_performance[netherlands_performance['matched_player_name'].notna()]
+
+######################################## Russia #############################################
+
+russia_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/russia.xlsx')
+russia_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/russia_player.csv')
+
+
+#remove accent
+
+x = russia_id.select_dtypes(include=[np.object]).columns
+russia_id[x] = russia_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+y = russia_performance.select_dtypes(include=[np.object]).columns
+russia_performance[y] = russia_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+russia_id['Player Name']=russia_id['Player Name'].str.lower()
+russia_id
+russia_performance['player_name']=russia_performance['player_name'].str.lower()
+russia_performance
+
+
+#match the team name between dataset
+
+
+id_team_name_list = russia_id['Club Name'].unique()
+performance_team_name_list = russia_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'FC Rostov':'fk-rostov',
+                    'Lokomotiv Moscow':'lokomotiv-moskau',
+                    'FC UFA':'fk-ufa',
+                    'Zenit Saint Petersburg':'zenit-st-petersburg',
+                    'Spartak Moscow':'spartak-moskau',
+                    'Dinamo Moscow':'dinamo-moskau',
+                    'CSKA Moscow':'zska-moskau',
+                    'Akhmat Grozny':'terek-grozny'
+                    }
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+russia_performance['match_team_name'] = russia_performance['team_name'].map(team_name_matched_dict)
+
+
+# match player name
+russia_performance = match_player_name(russia_id, russia_performance)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+russia_performance = russia_performance.replace(r'',np.NaN)
+
+# drop the row
+russia_performance = russia_performance[russia_performance['matched_player_name'].notna()]
+
+######################################## Portugal #############################################
+
+
+portugal_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/portugal.xlsx')
+portugal_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/portugal_player.csv')
+
+portugal_id
+portugal_performance
+
+#remove accent
+
+x = portugal_id.select_dtypes(include=[np.object]).columns
+portugal_id[x] = portugal_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = portugal_performance.select_dtypes(include=[np.object]).columns
+portugal_performance[y] = portugal_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+portugal_id['Player Name']=portugal_id['Player Name'].str.lower()
+
+portugal_performance['player_name']=portugal_performance['player_name'].str.lower()
+
+
+#match the team name between dataset
+
+
+id_team_name_list = portugal_id['Club Name'].unique()
+performance_team_name_list = portugal_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Sporting CP':'sporting-lissabon'}
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+portugal_performance['match_team_name'] = portugal_performance['team_name'].map(team_name_matched_dict)
+
+
+# match player name
+portugal_performance=match_player_name(portugal_id, portugal_performance)
+
+# match player name
+portugal_performance=match_player_name(portugal_id, portugal_performance)
+
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+portugal_performance = portugal_performance.replace(r'',np.NaN)
+
+# drop the row
+portugal_performance = portugal_performance[portugal_performance['matched_player_name'].notna()]
+
+
+######################################## Belgium #############################################
+
+belgium_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/belgium.xlsx')
+belgium_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/belgium_player.csv')
+
+
+#remove accent
+
+x = belgium_id.select_dtypes(include=[np.object]).columns
+belgium_id[x] = belgium_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = belgium_performance.select_dtypes(include=[np.object]).columns
+belgium_performance[y] = belgium_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+belgium_id['Player Name']=belgium_id['Player Name'].str.lower()
+
+belgium_performance['player_name']=belgium_performance['player_name'].str.lower()
+
+
+#match the team name between dataset
+
+
+id_team_name_list = belgium_id['Club Name'].unique()
+performance_team_name_list = belgium_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Standard Liege':'standard-luttich',
+                    'Antwerp':'royal-fc-antwerpen',
+                    'Club Brugge KV':'fc-brugge',
+                    'St. Truiden':'vv-st-truiden',
+                    'Royal Excel Mouscron':'mouscron-peruwelz',
+                    'AS Eupen':'kas-eupen',
+                    'Waasland-beveren':'waasland-beveren',
+                    }
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+belgium_performance['match_team_name'] = belgium_performance['team_name'].map(team_name_matched_dict)
+
+# match player name
+belgium_performance=match_player_name(belgium_id, belgium_performance)
+
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+belgium_performance = belgium_performance.replace(r'',np.NaN)
+
+# drop the row
+belgium_performance = belgium_performance[belgium_performance['matched_player_name'].notna()]
+
+
+
+######################################## Turkey #############################################
+
+turkey_id=pd.read_excel('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player identity/turkey.xlsx')
+turkey_performance=pd.read_csv('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data/per league/player performance/turkey_player.csv')
+
+
+#remove accent
+
+x = turkey_id.select_dtypes(include=[np.object]).columns
+turkey_id[x] = turkey_id[x].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+y = turkey_performance.select_dtypes(include=[np.object]).columns
+turkey_performance[y] = turkey_performance[y].apply(lambda x: x.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8'))
+
+
+#lower case
+
+turkey_id['Player Name']=turkey_id['Player Name'].str.lower()
+
+turkey_performance['player_name']=turkey_performance['player_name'].str.lower()
+
+
+#match the team name between dataset
+
+id_team_name_list = turkey_id['Club Name'].unique()
+performance_team_name_list = turkey_performance['team_name'].unique()
+
+#mention the club that has very different name in id_dataset
+unique_club_name = {'Erzurum BB':'erzurum-buyuksehir-belediyespor',
+                    'Istanbul Basaksehir':'istanbul-buyuksehir-belediyespor',
+}
+
+# match team name
+team_name_matched_dict = match_team_name(id_team_name_list, performance_team_name_list, unique_club_name)
+turkey_performance['match_team_name'] = turkey_performance['team_name'].map(team_name_matched_dict)
+
+
+# match player name
+turkey_performance=match_player_name(turkey_id, turkey_performance)
+
+#  remove unnecessary column = unnecessary
+
+# remove the rows of the player in performance that has no match in id
+
+# replace the empty string with NaN
+turkey_performance = turkey_performance.replace(r'',np.NaN)
+
+# drop the row
+turkey_performance = turkey_performance[turkey_performance['matched_player_name'].notna()]
+
+###################################################################################################
+
+# combine id
+
+df_id=pd.concat([english_id, spain_id, italy_id, germany_id, france_id, netherlands_id, 
+                 russia_id,portugal_id, belgium_id, turkey_id], ignore_index=True)
+
+df_id.to_csv('df_id.csv')
+
+#  combine performance
+df_performance=pd.concat([english_performance, spain_performance, italy_performance,
+                          germany_performance, france_performance , netherlands_performance,
+                          russia_performance, portugal_performance, belgium_performance,
+                          turkey_performance], ignore_index=True)
+
+# remove duplicate player
+df_performance = df_performance.drop_duplicates('player_id', keep='first')
+
+
+
+# drop unnecessary columns in df_performance
+df_performance.columns
+df_performance.drop(['player_id', 'player_name', 
+                'firstname', 'lastname','team_name','number','injured'], axis=1, inplace=True)
+
+
+df_performance
+df_id
+
+
+# change the df_performance['match_team_name'] into df_performance['Club Name']
+df_performance=df_performance.rename(columns = {'match_team_name':'Club Name'})
+df_performance=df_performance.rename(columns = {'matched_player_name':'Player Name'})
+df_performance
+df_id
+
+#  apply:
+df = pd.merge(df_id, df_performance, how='outer', on=['Player Name', 'Club Name'])
+
+# write the data to excel
+import os
+os.chdir('C:/Users/Cynthia Suprihanta/OneDrive/Aston University/Business Project/data')
+df.to_csv('Final Performance and ID data.csv',index=False,encoding='utf-8-sig')
