@@ -1,0 +1,186 @@
+name,team_id,country
+Manchester United,33,England
+Leicester,46,England
+Newcastle,34,England
+Tottenham,47,England
+Bournemouth,35,England
+Cardiff,43,England
+Fulham,36,England
+Crystal Palace,52,England
+Huddersfield,37,England
+Chelsea,49,England
+Watford,38,England
+Brighton,51,England
+Wolves,39,England
+Everton,45,England
+Liverpool,40,England
+West Ham,48,England
+Southampton,41,England
+Burnley,44,England
+Arsenal,42,England
+Manchester City,50,England
+Athletic Club,531,Spain
+Leganes,537,Spain
+Barcelona,529,Spain
+Alaves,542,Spain
+Real Betis,543,Spain
+Levante,539,Spain
+Celta Vigo,538,Spain
+Espanyol,540,Spain
+Eibar,545,Spain
+Huesca,726,Spain
+Girona,547,Spain
+Valladolid,720,Spain
+Rayo Vallecano,728,Spain
+Sevilla,536,Spain
+Real Madrid,541,Spain
+Getafe,546,Spain
+Valencia,532,Spain
+Atletico Madrid,530,Spain
+Villarreal,533,Spain
+Real Sociedad,548,Spain
+AC Milan,489,Italy
+Genoa,495,Italy
+Atalanta,499,Italy
+Frosinone,512,Italy
+Bologna,500,Italy
+Spal,493,Italy
+Chievo,491,Italy
+Juventus,496,Italy
+Empoli,511,Italy
+Cagliari,490,Italy
+Lazio,487,Italy
+Napoli,492,Italy
+Parma,523,Italy
+Udinese,494,Italy
+Sampdoria,498,Italy
+Fiorentina,502,Italy
+Sassuolo,488,Italy
+Inter,505,Italy
+Torino,503,Italy
+AS Roma,497,Italy
+Bayern Munich,157,Germany
+1899 Hoffenheim,167,Germany
+Fortuna Dusseldorf,158,Germany
+FC Augsburg,170,Germany
+Hertha Berlin,159,Germany
+FC Nurnberg,171,Germany
+SC Freiburg,160,Germany
+Eintracht Frankfurt,169,Germany
+VfL Wolfsburg,161,Germany
+FC Schalke 04,174,Germany
+Werder Bremen,162,Germany
+Hannover 96,166,Germany
+Borussia Monchengladbach,163,Germany
+Bayer Leverkusen,168,Germany
+FSV Mainz 05,164,Germany
+VfB Stuttgart,172,Germany
+Borussia Dortmund,165,Germany
+RB Leipzig,173,Germany
+Union Berlin,182,Germany
+Paris Saint Germain,85,France
+Caen,88,France
+Bordeaux,78,France
+Strasbourg,95,France
+Lyon,80,France
+Amiens,87,France
+Angers,77,France
+Nimes,92,France
+Lille,79,France
+Rennes,94,France
+Montpellier,82,France
+Dijon,89,France
+Nice,84,France
+Reims,93,France
+Saint Etienne,1063,France
+Guingamp,90,France
+Nantes,83,France
+Monaco,91,France
+Marseille,81,France
+Toulouse,96,France
+PEC Zwolle,193,Netherlands
+Heerenveen,210,Netherlands
+Ajax,194,Netherlands
+Heracles,206,Netherlands
+Willem II,195,Netherlands
+VVV Venlo,204,Netherlands
+Excelsior,196,Netherlands
+Fortuna Sittard,205,Netherlands
+PSV Eindhoven,197,Netherlands
+Utrecht,207,Netherlands
+ADO Den Haag,198,Netherlands
+Emmen,208,Netherlands
+De Graafschap,199,Netherlands
+Feyenoord,209,Netherlands
+Vitesse,200,Netherlands
+Groningen,202,Netherlands
+AZ Alkmaar,201,Netherlands
+NAC Breda,203,Netherlands
+Krylya Sovetov,1079,Russia
+Anzhi,1082,Russia
+FC Rostov,779,Russia
+Rubin,1083,Russia
+Enisey,1089,Russia
+Lokomotiv Moscow,597,Russia
+FC UFA,1078,Russia
+Zenit Saint Petersburg,596,Russia
+Orenburg,1080,Russia
+Krasnodar,621,Russia
+Spartak Moscow,558,Russia
+Dinamo Moscow,1088,Russia
+CSKA Moscow,555,Russia
+Ural,1084,Russia
+Akhmat Grozny,1085,Russia
+Arsenal Tula,1077,Russia
+Benfica,211,Portugal
+Guimaraes,224,Portugal
+FC Porto,212,Portugal
+Chaves,223,Portugal
+Feirense,213,Portugal
+Rio Ave,226,Portugal
+Maritimo,214,Portugal
+Santa Clara,227,Portugal
+Moreirense,215,Portugal
+Sporting CP,228,Portugal
+Portimonense,216,Portugal
+Boavista,222,Portugal
+SC Braga,217,Portugal
+Nacional,225,Portugal
+Tondela,218,Portugal
+Belenenses,221,Portugal
+Vitoria Setubal,219,Portugal
+Aves,220,Portugal
+Standard Liege,733,Belgium
+Antwerp,740,Belgium
+Genk,742,Belgium
+Anderlecht,554,Belgium
+Club Brugge KV,569,Belgium
+Gent,631,Belgium
+Kortrijk,734,Belgium
+Zulte Waregem,600,Belgium
+Waasland-beveren,738,Belgium
+St. Truiden,735,Belgium
+Cercle Brugge,741,Belgium
+Oostende,624,Belgium
+Royal Excel Mouscron,743,Belgium
+AS Eupen,739,Belgium
+Charleroi,736,Belgium
+Lokeren,737,Belgium
+Kayserispor,1001,Turkey
+Antalyaspor,1005,Turkey
+Trabzonspor,998,Turkey
+Sivasspor,1002,Turkey
+Bursaspor,1003,Turkey
+Konyaspor,607,Turkey
+Yeni Malatyaspor,999,Turkey
+Fenerbahce,611,Turkey
+Akhisar Belediye,995,Turkey
+Rizespor,1007,Turkey
+Erzurum BB,1009,Turkey
+Besiktas,549,Turkey
+Alanyaspor,996,Turkey
+Ankaragucu,1010,Turkey
+Galatasaray,645,Turkey
+Goztepe,994,Turkey
+Kasimpasa,1004,Turkey
+Istanbul Basaksehir,564,Turkey
